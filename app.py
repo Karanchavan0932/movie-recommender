@@ -169,7 +169,7 @@ def get_star_rating(rating):
         stars += "✨"
     return stars
 
-def display_movie_card(movie, col):
+def display_movie_card(movie, col, context="default"):
     with col:
         with st.container():
             # Title
@@ -204,13 +204,13 @@ def display_movie_card(movie, col):
             # Action buttons
             btn_col1, btn_col2 = st.columns(2)
             with btn_col1:
-                if st.button(f"➕ Add to Watchlist", key=f"add_{movie['title']}"):
+                if st.button(f"➕ Add to Watchlist", key=f"add_{context}_{movie['title']}"):
                     if movie['title'] not in st.session_state.watchlist:
                         st.session_state.watchlist.append(movie['title'])
                         st.success(f"Added to watchlist!")
             
             with btn_col2:
-                if st.button(f"❤️ View Details", key=f"details_{movie['title']}"):
+                if st.button(f"❤️ View Details", key=f"details_{context}_{movie['title']}"):
                     st.session_state.selected_movie = movie['title']
 
 # ============================================================================
@@ -393,7 +393,7 @@ if df is not None and len(df) > 0:
             cols = st.columns(3)
             for idx, movie in top_movies.iterrows():
                 col_idx = (top_movies.index.get_loc(idx)) % 3
-                display_movie_card(movie, cols[col_idx])
+                display_movie_card(movie, cols[col_idx], "top_movies")
         else:
             st.warning("No movies match your filters.")
     
@@ -434,7 +434,7 @@ if df is not None and len(df) > 0:
             cols = st.columns(3)
             for idx, (_, movie) in enumerate(page_movies.iterrows()):
                 col_idx = idx % 3
-                display_movie_card(movie, cols[col_idx])
+                display_movie_card(movie, cols[col_idx], "search")
         else:
             st.info("No movies found. Try different search terms or filters.")
     
@@ -465,7 +465,7 @@ if df is not None and len(df) > 0:
                     cols = st.columns(3)
                     for idx, (_, movie) in enumerate(recommendations.iterrows()):
                         col_idx = idx % 3
-                        display_movie_card(movie, cols[col_idx])
+                        display_movie_card(movie, cols[col_idx], "recommendations")
                 else:
                     st.warning("Could not generate recommendations.")
     
@@ -554,7 +554,7 @@ if df is not None and len(df) > 0:
             cols = st.columns(3)
             for idx, (_, movie) in enumerate(watchlist_movies.iterrows()):
                 col_idx = idx % 3
-                display_movie_card(movie, cols[col_idx])
+                display_movie_card(movie, cols[col_idx], "watchlist")
         
         else:
             st.info("Your watchlist is empty! Add movies from other tabs to get started.")
